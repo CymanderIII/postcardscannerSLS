@@ -9,7 +9,7 @@ from io import BytesIO
 import subprocess
 import RPi.GPIO as GPIO
 from RpiMotorLib import RpiMotorLib
-from postcardscanner.hardware.scanner import Scanner
+from scanner.scanner import Scanner
 from postcardscanner.states import PostcardScannerState
 
 
@@ -129,18 +129,20 @@ class ScannerV3(Scanner):
                 except Exception as e:
                     logger.error(f'Capture callback raised exception: {e}')
                 self._led_off()
-                self._mot_active()
                 # time.sleep(1)
                 self.pos = 4
                 self.counter = 0
             return PostcardScannerState.scanning
         if self.pos == 4:
             self.counter += 1
-            if self.postcard_accepted or self.counter > 1000:
+            time.sleep(0.1)
+            if self.postcard_accepted or self.counter > 1200:
+                self._mot_active()
                 self.pos = 5
                 self.counter = 0
                 self.postcard_accepted = False
             elif self.postcard_rejected:
+                self._mot_active()
                 self.motor.motor_go(not self.clockwise, self.steptype_2, 3000, .00008, False, 0)
                 self.pos = 0
                 self.counter = 0
