@@ -9,7 +9,7 @@ from io import BytesIO
 import subprocess
 import RPi.GPIO as GPIO
 from RpiMotorLib import RpiMotorLib
-from scanner.scanner import Scanner
+from scanner import Scanner
 from postcardscanner.states import PostcardScannerState
 
 
