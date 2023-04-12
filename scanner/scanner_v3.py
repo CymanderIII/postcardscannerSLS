@@ -3,7 +3,7 @@
 
 import logging
 
-logger = logging.getLogger('scanner_v2')
+logger = logging.getLogger('scanner_v3')
 import time
 from io import BytesIO
 import subprocess
@@ -94,16 +94,19 @@ class ScannerV3(Scanner):
                 return PostcardScannerState.enabled
         if self.pos == 1:
             self.counter += 1
-            if self.counter > 50:
-                self.pos = 99
             self.motor.motor_go(self.clockwise, self.steptype_1, 100, self.stepdelay, False, 0)
             if not self._sns(0) or not self._sns(1):
+                self.counter = 0
                 self.pos = 0
             if self._sns(2):
                 self.pos = 2
                 self.counter = 0
-            else:
-                return PostcardScannerState.scanning
+            if self.counter > 50:
+                if self.counter > 80:
+                    self.pos = 99
+                else:
+                    self.motor.motor_go(not self.clockwise, self.steptype_1, 100, self.stepdelay, False, 0)
+            return PostcardScannerState.scanning
         if self.pos == 2:
             self.counter += 1
             if self.counter > 100:
