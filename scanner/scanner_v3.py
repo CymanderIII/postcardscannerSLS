@@ -84,6 +84,8 @@ class ScannerV3(Scanner):
 
     def loop(self):
         if self.pos == 0:
+            self.postcard_accepted = False
+            self.postcard_rejected = False
             if self._sns(0) and self._sns(1):
                 self.pos = 1
                 self._mot_active()
